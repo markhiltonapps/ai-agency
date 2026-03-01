@@ -1,0 +1,6 @@
+[project]
+name = "ai-agency"
+version = "1.0.0"
+description = "AI Website Design Agency Dashboard"
+requires-python = ">=3.9"
+dependencies = []
