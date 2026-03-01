@@ -357,10 +357,9 @@ class RequestHandler(BaseHTTPRequestHandler):
 
 
 def run_server(port=5000):
-    server_address = ('', port)
+    server_address = ('0.0.0.0', port)
     httpd = HTTPServer(server_address, RequestHandler)
-    print(f"🚀 AI Agency Dashboard running at http://localhost:{port}")
-    print(f"📊 Open the link above to see your dashboard!")
+    print(f"🚀 Dashboard running on port {port}")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
