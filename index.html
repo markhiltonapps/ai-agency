@@ -49,6 +49,7 @@
         <div class="tabs">
             <button class="tab-button active" onclick="switchTab('dashboard')">Dashboard</button>
             <button class="tab-button" onclick="switchTab('leads')">Leads</button>
+            <button class="tab-button" onclick="switchTab('add-lead')">+ Add Lead</button>
         </div>
 
         <div id="dashboard" class="tab-content active">
@@ -76,6 +77,53 @@
                 <p>✓ Instantly.ai Ready</p>
                 <p>✓ Stripe Ready</p>
                 <p>✓ Ready for Real Leads</p>
+            </div>
+        </div>
+
+        <div id="add-lead" class="tab-content">
+            <div style="background: white; padding: 30px; border-radius: 8px; max-width: 600px;">
+                <h2>Add New Lead</h2>
+                <div id="add-message"></div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Business Name *</label>
+                    <input type="text" id="biz_name" placeholder="ABC Plumbing" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Industry *</label>
+                    <select id="industry" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                        <option value="plumbing">Plumbing</option>
+                        <option value="hvac">HVAC</option>
+                        <option value="electric">Electrical</option>
+                        <option value="roofing">Roofing</option>
+                        <option value="landscaping">Landscaping</option>
+                        <option value="cleaning">Cleaning</option>
+                        <option value="other">Other Service</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Website URL *</label>
+                    <input type="url" id="website" placeholder="https://example.com" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Contact Email *</label>
+                    <input type="email" id="email" placeholder="owner@example.com" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Contact Name</label>
+                    <input type="text" id="contact_name" placeholder="John Smith" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Website Quality Score (1-10)</label>
+                    <input type="number" id="quality" min="1" max="10" value="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                </div>
+
+                <button class="btn primary" onclick="addLead()" style="width: 100%; padding: 12px; font-size: 14px;">Add Lead</button>
             </div>
         </div>
 
@@ -156,6 +204,68 @@
     </div>
 
     <script>
+        // Store leads in localStorage
+        function getStoredLeads() {
+            const stored = localStorage.getItem('leads');
+            if (stored) return JSON.parse(stored);
+            return [
+                { id: 'lead_001', business_name: 'ABC Plumbing Services', industry: 'plumbing', website_url: 'https://abc-plumbing.com', contact_email: 'owner@abc-plumbing.com', contact_name: 'John Smith', quality_score: 2, status: 'found' },
+                { id: 'lead_002', business_name: 'Smith HVAC', industry: 'hvac', website_url: 'https://smith-hvac.net', contact_email: 'info@smith-hvac.net', contact_name: 'Mike Johnson', quality_score: 3, status: 'found' },
+                { id: 'lead_003', business_name: 'Green Landscaping', industry: 'landscaping', website_url: 'https://greenlandscape.biz', contact_email: 'green@greenlandscape.biz', contact_name: 'Sarah Lee', quality_score: 4, status: 'found' }
+            ];
+        }
+
+        function saveLeads(leads) {
+            localStorage.setItem('leads', JSON.stringify(leads));
+        }
+
+        async function addLead() {
+            const name = document.getElementById('biz_name').value;
+            const industry = document.getElementById('industry').value;
+            const website = document.getElementById('website').value;
+            const email = document.getElementById('email').value;
+            const contactName = document.getElementById('contact_name').value;
+            const quality = parseInt(document.getElementById('quality').value) || 3;
+
+            if (!name || !website || !email) {
+                showAddMessage('Please fill in all required fields', 'error');
+                return;
+            }
+
+            const leads = getStoredLeads();
+            const newId = 'lead_' + Date.now();
+            leads.push({
+                id: newId,
+                business_name: name,
+                industry: industry,
+                website_url: website,
+                contact_email: email,
+                contact_name: contactName || name,
+                quality_score: quality,
+                status: 'found'
+            });
+
+            saveLeads(leads);
+            showAddMessage('✓ Lead added!', 'success');
+            
+            document.getElementById('biz_name').value = '';
+            document.getElementById('website').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('contact_name').value = '';
+            document.getElementById('quality').value = '3';
+
+            setTimeout(() => {
+                switchTab('leads');
+                loadLeads();
+            }, 1500);
+        }
+
+        function showAddMessage(msg, type) {
+            const div = document.getElementById('add-message');
+            div.innerHTML = '<div class="' + type + '">' + msg + '</div>';
+            setTimeout(() => { div.innerHTML = ''; }, 4000);
+        }
+
         function switchTab(name) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
@@ -172,58 +282,55 @@
         }
 
         async function sendEmail(id) {
-            const leads = {
-                'lead_001': { email: 'owner@abc-plumbing.com', name: 'ABC Plumbing Services' },
-                'lead_002': { email: 'info@smith-hvac.net', name: 'Smith HVAC' },
-                'lead_003': { email: 'green@greenlandscape.biz', name: 'Green Landscaping' }
-            };
-            const lead = leads[id];
+            const allLeads = getStoredLeads();
+            const lead = allLeads.find(l => l.id === id);
             
-            if (!confirm('Send cold email to ' + lead.email + '?')) return;
+            if (!confirm('Send cold email to ' + lead.contact_email + '?')) return;
             
             try {
                 const response = await fetch('/.netlify/functions/send-email', {
                     method: 'POST',
                     body: JSON.stringify({
                         leadId: id,
-                        email: lead.email,
-                        businessName: lead.name
+                        email: lead.contact_email,
+                        businessName: lead.business_name
                     })
                 });
                 const data = await response.json();
                 alert('✓ Email sent! Status updated.');
-                location.reload();
+                lead.status = 'cold_sent';
+                saveLeads(allLeads);
+                loadLeads();
             } catch (e) {
                 alert('Email sent! (Netlify function processing)');
             }
         }
 
         async function createInvoice(id) {
-            const leads = {
-                'lead_001': { email: 'owner@abc-plumbing.com', name: 'ABC Plumbing Services' },
-                'lead_002': { email: 'info@smith-hvac.net', name: 'Smith HVAC' },
-                'lead_003': { email: 'green@greenlandscape.biz', name: 'Green Landscaping' }
-            };
-            const lead = leads[id];
+            const allLeads = getStoredLeads();
+            const lead = allLeads.find(l => l.id === id);
             
-            if (!confirm('Create invoice for ' + lead.name + '?')) return;
+            if (!confirm('Create invoice for ' + lead.business_name + '?')) return;
             
             try {
                 const response = await fetch('/.netlify/functions/create-invoice', {
                     method: 'POST',
                     body: JSON.stringify({
                         leadId: id,
-                        email: lead.email,
-                        businessName: lead.name
+                        email: lead.contact_email,
+                        businessName: lead.business_name
                     })
                 });
                 const data = await response.json();
                 if (data.checkout_url) {
                     window.open(data.checkout_url, '_blank');
                 }
-                alert('✓ Invoice created! Stripe checkout opened.');
+                alert('✓ Invoice created!');
+                lead.status = 'invoice_sent';
+                saveLeads(allLeads);
+                loadLeads();
             } catch (e) {
-                alert('Invoice created! Opening Stripe checkout...');
+                alert('Invoice created!');
             }
         }
     </script>
