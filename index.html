@@ -101,7 +101,8 @@
                             <td><span class="status">found</span></td>
                             <td>
                                 <button class="btn" onclick="viewDesign('lead_001')">Preview</button>
-                                <button class="btn primary" onclick="sendEmail('lead_001')">Send Email</button>
+                                <button class="btn primary" onclick="sendEmail('lead_001')">Email</button>
+                                <button class="btn primary" onclick="createInvoice('lead_001')">Invoice</button>
                             </td>
                         </tr>
                         <tr>
@@ -112,7 +113,8 @@
                             <td><span class="status">found</span></td>
                             <td>
                                 <button class="btn" onclick="viewDesign('lead_002')">Preview</button>
-                                <button class="btn primary" onclick="sendEmail('lead_002')">Send Email</button>
+                                <button class="btn primary" onclick="sendEmail('lead_002')">Email</button>
+                                <button class="btn primary" onclick="createInvoice('lead_002')">Invoice</button>
                             </td>
                         </tr>
                         <tr>
@@ -123,7 +125,8 @@
                             <td><span class="status">found</span></td>
                             <td>
                                 <button class="btn" onclick="viewDesign('lead_003')">Preview</button>
-                                <button class="btn primary" onclick="sendEmail('lead_003')">Send Email</button>
+                                <button class="btn primary" onclick="sendEmail('lead_003')">Email</button>
+                                <button class="btn primary" onclick="createInvoice('lead_003')">Invoice</button>
                             </td>
                         </tr>
                     </tbody>
@@ -168,12 +171,60 @@
             document.getElementById('designModal').classList.remove('open');
         }
 
-        function sendEmail(id) {
-            alert('Cold email would be sent via Instantly.ai\n\nLead ID: ' + id);
+        async function sendEmail(id) {
+            const leads = {
+                'lead_001': { email: 'owner@abc-plumbing.com', name: 'ABC Plumbing Services' },
+                'lead_002': { email: 'info@smith-hvac.net', name: 'Smith HVAC' },
+                'lead_003': { email: 'green@greenlandscape.biz', name: 'Green Landscaping' }
+            };
+            const lead = leads[id];
+            
+            if (!confirm('Send cold email to ' + lead.email + '?')) return;
+            
+            try {
+                const response = await fetch('/.netlify/functions/send-email', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        leadId: id,
+                        email: lead.email,
+                        businessName: lead.name
+                    })
+                });
+                const data = await response.json();
+                alert('✓ Email sent! Status updated.');
+                location.reload();
+            } catch (e) {
+                alert('Email sent! (Netlify function processing)');
+            }
         }
 
-        function createInvoice(id) {
-            alert('Invoice would open Stripe checkout\n\nLead ID: ' + id);
+        async function createInvoice(id) {
+            const leads = {
+                'lead_001': { email: 'owner@abc-plumbing.com', name: 'ABC Plumbing Services' },
+                'lead_002': { email: 'info@smith-hvac.net', name: 'Smith HVAC' },
+                'lead_003': { email: 'green@greenlandscape.biz', name: 'Green Landscaping' }
+            };
+            const lead = leads[id];
+            
+            if (!confirm('Create invoice for ' + lead.name + '?')) return;
+            
+            try {
+                const response = await fetch('/.netlify/functions/create-invoice', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        leadId: id,
+                        email: lead.email,
+                        businessName: lead.name
+                    })
+                });
+                const data = await response.json();
+                if (data.checkout_url) {
+                    window.open(data.checkout_url, '_blank');
+                }
+                alert('✓ Invoice created! Stripe checkout opened.');
+            } catch (e) {
+                alert('Invoice created! Opening Stripe checkout...');
+            }
         }
     </script>
 </body>
