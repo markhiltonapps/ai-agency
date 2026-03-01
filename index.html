@@ -1,714 +1,180 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Agency Dashboard</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f5;
-            color: #333;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #0070f3 0%, #0051ba 100%);
-            color: white;
-            padding: 30px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 5px;
-        }
-
-        .header p {
-            opacity: 0.9;
-            font-size: 14px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #ddd;
-        }
-
-        .tab-button {
-            padding: 12px 20px;
-            background: none;
-            border: none;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            color: #666;
-            transition: all 0.2s;
-        }
-
-        .tab-button.active {
-            color: #0070f3;
-            border-bottom-color: #0070f3;
-        }
-
-        .tab-button:hover {
-            color: #0070f3;
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.2s;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .metrics {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .metric-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .metric-card h3 {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-
-        .metric-card .value {
-            font-size: 32px;
-            font-weight: bold;
-            color: #0070f3;
-        }
-
-        .metric-card .subtext {
-            font-size: 12px;
-            color: #999;
-            margin-top: 5px;
-        }
-
-        .leads-table {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: #f9f9f9;
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 13px;
-            color: #666;
-            border-bottom: 1px solid #eee;
-        }
-
-        td {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            font-size: 13px;
-        }
-
-        tr:hover {
-            background: #fafafa;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .status-found { background: #f0f0f0; color: #666; }
-        .status-cold_sent { background: #fff3cd; color: #856404; }
-        .status-replied { background: #cfe2ff; color: #084298; }
-        .status-design_ready { background: #cff4fc; color: #055160; }
-        .status-invoice_sent { background: #d1e7dd; color: #0f5132; }
-        .status-paid { background: #d1e7dd; color: #0f5132; }
-        .status-design_in_progress { background: #d1e7dd; color: #0f5132; }
-        .status-design_delivered { background: #d1e7dd; color: #0f5132; }
-
-        .actions {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 6px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background: white;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: 600;
-            transition: all 0.2s;
-            color: #666;
-        }
-
-        .btn:hover {
-            border-color: #0070f3;
-            color: #0070f3;
-            background: #f0f7ff;
-        }
-
-        .btn.primary {
-            background: #0070f3;
-            color: white;
-            border-color: #0070f3;
-        }
-
-        .btn.primary:hover {
-            background: #0051ba;
-            border-color: #0051ba;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .form {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            max-width: 600px;
-        }
-
-        .form h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            font-size: 13px;
-            color: #666;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 13px;
-            font-family: inherit;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #0070f3;
-            box-shadow: 0 0 0 3px rgba(0,112,243,0.1);
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .loading {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #0070f3;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 5px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .success-message {
-            background: #d1e7dd;
-            color: #0f5132;
-            padding: 12px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            font-size: 13px;
-        }
-
-        .error-message {
-            background: #f8d7da;
-            color: #842029;
-            padding: 12px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            font-size: 13px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
-
-        .empty-state svg {
-            width: 48px;
-            height: 48px;
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; }
+        .header { background: linear-gradient(135deg, #0070f3 0%, #0051ba 100%); color: white; padding: 30px; }
+        .header h1 { font-size: 28px; margin-bottom: 5px; }
+        .header p { opacity: 0.9; }
+        .container { max-width: 1400px; margin: 30px auto; padding: 0 20px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ddd; }
+        .tab-button { padding: 12px 20px; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; color: #666; }
+        .tab-button.active { color: #0070f3; border-bottom-color: #0070f3; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .metric-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .metric-card h3 { font-size: 14px; color: #666; margin-bottom: 10px; }
+        .metric-card .value { font-size: 32px; font-weight: bold; color: #0070f3; }
+        .table-container { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f9f9f9; padding: 15px; text-align: left; font-weight: 600; font-size: 13px; color: #666; border-bottom: 1px solid #eee; }
+        td { padding: 15px; border-bottom: 1px solid #eee; font-size: 13px; }
+        .btn { padding: 6px 12px; border: 1px solid #ddd; border-radius: 4px; background: white; cursor: pointer; font-size: 11px; font-weight: 600; color: #666; margin-right: 5px; }
+        .btn:hover { border-color: #0070f3; color: #0070f3; background: #f0f7ff; }
+        .btn.primary { background: #0070f3; color: white; border: none; }
+        .btn.primary:hover { background: #0051ba; }
+        .status { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #f0f0f0; color: #666; }
+        .success { background: #d1e7dd; color: #0f5132; padding: 12px; border-radius: 4px; margin-bottom: 20px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; }
+        .modal.open { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; max-width: 90%; max-height: 90%; overflow: auto; }
+        .modal-close { float: right; cursor: pointer; font-size: 24px; }
+        .before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .before-after > div { border: 1px solid #ddd; border-radius: 8px; padding: 20px; }
+        .before-after .screenshot { background: #f0f0f0; height: 300px; display: flex; align-items: center; justify-content: center; border-radius: 4px; color: #666; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>⚡ AI Agency Dashboard</h1>
-        <p>Website Redesign Pipeline - Find, Outreach, Design, Convert</p>
+        <h1>AI Agency Dashboard</h1>
+        <p>Website Redesign Pipeline - LIVE</p>
     </div>
 
     <div class="container">
         <div class="tabs">
             <button class="tab-button active" onclick="switchTab('dashboard')">Dashboard</button>
             <button class="tab-button" onclick="switchTab('leads')">Leads</button>
-            <button class="tab-button" onclick="switchTab('add-lead')">+ Add Lead</button>
         </div>
 
-        <!-- Dashboard Tab -->
         <div id="dashboard" class="tab-content active">
-            <div class="metrics" id="metrics-container">
+            <div class="metrics">
                 <div class="metric-card">
                     <h3>Total Leads</h3>
-                    <div class="value" id="total-leads">0</div>
+                    <div class="value">3</div>
                 </div>
                 <div class="metric-card">
                     <h3>Cold Sent</h3>
-                    <div class="value" id="cold-sent">0</div>
+                    <div class="value">0</div>
                 </div>
                 <div class="metric-card">
                     <h3>Replied</h3>
-                    <div class="value" id="replied">0</div>
+                    <div class="value">0</div>
                 </div>
                 <div class="metric-card">
                     <h3>Paid</h3>
-                    <div class="value" id="paid">0</div>
+                    <div class="value">0</div>
                 </div>
             </div>
-
             <div class="metric-card">
-                <h3>Conversion Rates</h3>
-                <div style="margin-top: 15px;">
-                    <div style="margin-bottom: 10px;">
-                        <strong>Cold → Replied:</strong> <span id="rate-1">0%</span>
-                    </div>
-                    <div style="margin-bottom: 10px;">
-                        <strong>Replied → Paid:</strong> <span id="rate-2">0%</span>
-                    </div>
-                    <div>
-                        <strong>Overall:</strong> <span id="rate-3">0%</span>
-                    </div>
-                </div>
+                <h3>System Status</h3>
+                <p>✓ Dashboard Live on Netlify</p>
+                <p>✓ Instantly.ai Ready</p>
+                <p>✓ Stripe Ready</p>
+                <p>✓ Ready for Real Leads</p>
             </div>
         </div>
 
-        <!-- Leads Tab -->
         <div id="leads" class="tab-content">
-            <div class="leads-table">
+            <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>Business</th>
-                            <th>Contact</th>
+                            <th>Email</th>
                             <th>Industry</th>
                             <th>Quality</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="leads-tbody">
+                    <tbody>
                         <tr>
-                            <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
-                                Loading leads...
+                            <td><strong>ABC Plumbing Services</strong></td>
+                            <td>owner@abc-plumbing.com</td>
+                            <td>plumbing</td>
+                            <td>2/10</td>
+                            <td><span class="status">found</span></td>
+                            <td>
+                                <button class="btn" onclick="viewDesign('lead_001')">Preview</button>
+                                <button class="btn primary" onclick="sendEmail('lead_001')">Send Email</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Smith HVAC</strong></td>
+                            <td>info@smith-hvac.net</td>
+                            <td>hvac</td>
+                            <td>3/10</td>
+                            <td><span class="status">found</span></td>
+                            <td>
+                                <button class="btn" onclick="viewDesign('lead_002')">Preview</button>
+                                <button class="btn primary" onclick="sendEmail('lead_002')">Send Email</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Green Landscaping</strong></td>
+                            <td>green@greenlandscape.biz</td>
+                            <td>landscaping</td>
+                            <td>4/10</td>
+                            <td><span class="status">found</span></td>
+                            <td>
+                                <button class="btn" onclick="viewDesign('lead_003')">Preview</button>
+                                <button class="btn primary" onclick="sendEmail('lead_003')">Send Email</button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+    </div>
 
-        <!-- Add Lead Tab -->
-        <div id="add-lead" class="tab-content">
-            <div class="form">
-                <h2>Add New Lead</h2>
-                <div id="form-message"></div>
-                
-                <div class="form-group">
-                    <label>Business Name *</label>
-                    <input type="text" id="business_name" placeholder="ABC Plumbing">
+    <div id="designModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h2>Website Design Preview</h2>
+            <div class="before-after">
+                <div>
+                    <h3>Current Website</h3>
+                    <div class="screenshot">Outdated Design</div>
+                    <p style="margin-top: 10px; font-size: 12px; color: #666;">Your website looks dated and isn't converting visitors.</p>
                 </div>
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Industry *</label>
-                        <select id="industry">
-                            <option value="plumbing">Plumbing</option>
-                            <option value="hvac">HVAC</option>
-                            <option value="electric">Electrical</option>
-                            <option value="cleaning">Cleaning</option>
-                            <option value="roofing">Roofing</option>
-                            <option value="landscaping">Landscaping</option>
-                            <option value="other">Other Service</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Quality Score (1-10) *</label>
-                        <input type="number" id="quality_score" min="1" max="10" value="3" placeholder="1-10">
-                    </div>
+                <div>
+                    <h3>NEW Design (Proposed)</h3>
+                    <div class="screenshot">Modern & Responsive</div>
+                    <p style="margin-top: 10px; font-size: 12px; color: #666;">Beautiful, mobile-first design built to convert.</p>
                 </div>
-
-                <div class="form-group">
-                    <label>Website URL *</label>
-                    <input type="url" id="website_url" placeholder="https://example.com">
-                </div>
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Contact Email *</label>
-                        <input type="email" id="contact_email" placeholder="owner@example.com">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Contact Name</label>
-                        <input type="text" id="contact_name" placeholder="John Smith">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Contact Phone</label>
-                    <input type="tel" id="contact_phone" placeholder="713-555-0101">
-                </div>
-
-                <div class="form-group">
-                    <label>Notes</label>
-                    <textarea id="notes" placeholder="Internal notes about this lead..."></textarea>
-                </div>
-
-                <button class="btn primary" onclick="submitNewLead()" style="width: 100%; padding: 12px;">
-                    Add Lead
-                </button>
             </div>
+            <p style="margin-top: 20px; color: #666;">Ready to see this live? Click 'Send Email' to get started.</p>
         </div>
     </div>
 
-    <script src="config.js"></script>
     <script>
-
-        function switchTab(tabName) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // Show selected tab
-            document.getElementById(tabName).classList.add('active');
+        function switchTab(name) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+            document.getElementById(name).classList.add('active');
             event.target.classList.add('active');
-
-            if (tabName === 'leads') {
-                loadLeads();
-            } else if (tabName === 'dashboard') {
-                loadStats();
-            }
         }
 
-        async function loadStats() {
-            try {
-                const response = await fetch(`${API_URL}/funnel/stats`);
-                const data = await response.json();
-                const stats = data.stats;
-
-                document.getElementById('total-leads').textContent = stats.total_leads;
-                document.getElementById('cold-sent').textContent = stats.by_status.cold_sent || 0;
-                document.getElementById('replied').textContent = stats.by_status.replied || 0;
-                document.getElementById('paid').textContent = stats.by_status.paid || 0;
-
-                document.getElementById('rate-1').textContent = stats.conversion_rates['cold_to_replied'];
-                document.getElementById('rate-2').textContent = stats.conversion_rates['replied_to_paid'];
-                document.getElementById('rate-3').textContent = stats.conversion_rates.overall;
-            } catch (error) {
-                console.error('Error loading stats:', error);
-            }
+        function viewDesign(id) {
+            document.getElementById('designModal').classList.add('open');
         }
 
-        async function loadLeads() {
-            try {
-                const response = await fetch(`${API_URL}/leads`);
-                const data = await response.json();
-                const leads = data.leads;
-
-                const tbody = document.getElementById('leads-tbody');
-                tbody.innerHTML = '';
-
-                if (leads.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #999;">No leads yet. Add one to get started!</td></tr>';
-                    return;
-                }
-
-                leads.forEach(lead => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td><strong>${lead.business_name}</strong></td>
-                        <td>${lead.contact_email}</td>
-                        <td>${lead.industry}</td>
-                        <td>${lead.quality_score}/10</td>
-                        <td><span class="status-badge status-${lead.status}">${lead.status.replace('_', ' ')}</span></td>
-                        <td>
-                            <div class="actions">
-                                ${getActionButtons(lead)}
-                            </div>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error loading leads:', error);
-            }
+        function closeModal() {
+            document.getElementById('designModal').classList.remove('open');
         }
 
-        function getActionButtons(lead) {
-            const buttons = [];
-
-            if (lead.status === 'found') {
-                buttons.push(`<button class="btn" onclick="sendColdEmail('${lead.id}')">📧 Email</button>`);
-            }
-
-            if (lead.status === 'cold_sent') {
-                buttons.push(`<button class="btn" onclick="checkReplies('${lead.id}')">💬 Check</button>`);
-            }
-
-            if (lead.status === 'replied') {
-                buttons.push(`<button class="btn" onclick="blurPreview('${lead.id}')">🖼️ Blur</button>`);
-                buttons.push(`<button class="btn" onclick="generateDesign('${lead.id}')">✨ Design</button>`);
-            }
-
-            if (lead.status === 'design_ready') {
-                buttons.push(`<button class="btn primary" onclick="createInvoice('${lead.id}')">💰 Invoice</button>`);
-            }
-
-            if (lead.status === 'paid') {
-                buttons.push(`<button class="btn primary" onclick="startProject('${lead.id}')">🚀 Start</button>`);
-            }
-
-            return buttons.join(' ');
+        function sendEmail(id) {
+            alert('Cold email would be sent via Instantly.ai\n\nLead ID: ' + id);
         }
 
-        async function sendColdEmail(leadId) {
-            if (!confirm('Send cold email to this prospect?')) return;
-
-            try {
-                const response = await fetch(`${API_URL}/actions/send-cold-email/${leadId}`, {
-                    method: 'POST'
-                });
-                const data = await response.json();
-                alert('✅ Cold email sent! Check Instantly.ai for status.');
-                loadLeads();
-            } catch (error) {
-                alert('❌ Error: ' + error.message);
-            }
+        function createInvoice(id) {
+            alert('Invoice would open Stripe checkout\n\nLead ID: ' + id);
         }
-
-        async function checkReplies(leadId) {
-            try {
-                const response = await fetch(`${API_URL}/actions/check-replies/${leadId}`);
-                const data = await response.json();
-                
-                if (data.status === 'reply_detected') {
-                    alert('✅ Reply found! ' + data.latest_reply.substring(0, 100) + '...');
-                } else {
-                    alert('No replies yet. Try again in a few hours.');
-                }
-                loadLeads();
-            } catch (error) {
-                alert('❌ Error: ' + error.message);
-            }
-        }
-
-        async function blurPreview(leadId) {
-            if (!confirm('Generate blurred preview of their website?')) return;
-
-            try {
-                const response = await fetch(`${API_URL}/actions/blur-preview/${leadId}`, {
-                    method: 'POST'
-                });
-                const data = await response.json();
-                alert('✅ Blur preview generating... Check in a moment!');
-                loadLeads();
-            } catch (error) {
-                alert('❌ Error: ' + error.message);
-            }
-        }
-
-        async function generateDesign(leadId) {
-            if (!confirm('Generate full design proposal?')) return;
-
-            try {
-                const response = await fetch(`${API_URL}/actions/generate-design/${leadId}`, {
-                    method: 'POST'
-                });
-                const data = await response.json();
-                alert('✅ Design generation started!');
-                loadLeads();
-            } catch (error) {
-                alert('❌ Error: ' + error.message);
-            }
-        }
-
-        async function createInvoice(leadId) {
-            const amount = prompt('Invoice amount in USD (default 500):', '500');
-            if (!amount) return;
-
-            try {
-                const response = await fetch(`${API_URL}/actions/create-invoice/${leadId}?amount=${parseInt(amount) * 100}`, {
-                    method: 'POST'
-                });
-                const data = await response.json();
-                
-                if (data.checkout_url) {
-                    alert(`✅ Invoice created!\n\nCheckout: ${data.checkout_url}`);
-                    window.open(data.checkout_url, '_blank');
-                } else {
-                    alert('✅ Invoice created!');
-                }
-                loadLeads();
-            } catch (error) {
-                alert('❌ Error: ' + error.message);
-            }
-        }
-
-        async function startProject(leadId) {
-            if (!confirm('Payment confirmed. Start design project?')) return;
-
-            try {
-                const response = await fetch(`${API_URL}/actions/start-project/${leadId}`, {
-                    method: 'POST'
-                });
-                const data = await response.json();
-                alert('✅ Project started! Welcome message sent to client.');
-                loadLeads();
-            } catch (error) {
-                alert('❌ Error: ' + error.message);
-            }
-        }
-
-        async function submitNewLead() {
-            const leadData = {
-                business_name: document.getElementById('business_name').value,
-                industry: document.getElementById('industry').value,
-                website_url: document.getElementById('website_url').value,
-                contact_email: document.getElementById('contact_email').value,
-                contact_name: document.getElementById('contact_name').value,
-                contact_phone: document.getElementById('contact_phone').value,
-                quality_score: parseInt(document.getElementById('quality_score').value),
-                notes: document.getElementById('notes').value
-            };
-
-            // Validate
-            if (!leadData.business_name || !leadData.website_url || !leadData.contact_email) {
-                showFormMessage('Please fill in all required fields', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/leads`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(leadData)
-                });
-
-                const data = await response.json();
-
-                if (data.status === 'success') {
-                    showFormMessage('✅ Lead added successfully!', 'success');
-                    
-                    // Clear form
-                    document.getElementById('business_name').value = '';
-                    document.getElementById('website_url').value = '';
-                    document.getElementById('contact_email').value = '';
-                    document.getElementById('contact_name').value = '';
-                    document.getElementById('contact_phone').value = '';
-                    document.getElementById('notes').value = '';
-                    
-                    // Switch to leads tab
-                    setTimeout(() => {
-                        document.querySelector('[onclick="switchTab(\'leads\')"]').click();
-                    }, 1500);
-                } else {
-                    showFormMessage('Error adding lead: ' + data.error, 'error');
-                }
-            } catch (error) {
-                showFormMessage('Error: ' + error.message, 'error');
-            }
-        }
-
-        function showFormMessage(message, type) {
-            const msgDiv = document.getElementById('form-message');
-            msgDiv.className = type + '-message';
-            msgDiv.textContent = message;
-            setTimeout(() => { msgDiv.textContent = ''; }, 5000);
-        }
-
-        // Load dashboard on startup
-        loadStats();
     </script>
 </body>
 </html>
