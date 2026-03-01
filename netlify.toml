@@ -1,0 +1,15 @@
+[build]
+  publish = "."
+  command = "echo 'No build required'"
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://ai-agency-api.replit.dev/api/:splat"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/actions/*"
+  to = "https://ai-agency-api.replit.dev/actions/:splat"
+  status = 200
+  force = false
