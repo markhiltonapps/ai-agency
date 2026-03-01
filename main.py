@@ -2,13 +2,7 @@
 import os
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
-class Handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        if self.path == '/':
-            self.send_response(200)
-            self.send_header('Content-type', 'text/html')
-            self.end_headers()
-            html = """<!DOCTYPE html>
+HTML = """<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -36,13 +30,12 @@ class Handler(BaseHTTPRequestHandler):
         td { padding: 15px; border-bottom: 1px solid #eee; font-size: 13px; }
         .btn { padding: 6px 12px; border: 1px solid #ddd; border-radius: 4px; background: white; cursor: pointer; font-size: 11px; font-weight: 600; color: #666; }
         .btn:hover { border-color: #0070f3; color: #0070f3; }
-        .success { background: #d1e7dd; color: #0f5132; padding: 12px; border-radius: 4px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>⚡ AI Agency Dashboard</h1>
-        <p>Website Redesign Pipeline - Live & Working!</p>
+        <p>Website Redesign Pipeline - LIVE!</p>
     </div>
 
     <div class="container">
@@ -71,10 +64,10 @@ class Handler(BaseHTTPRequestHandler):
                 </div>
             </div>
             <div class="metric-card">
-                <h3 style="margin-bottom: 15px;">🎉 Your Dashboard is LIVE!</h3>
-                <p>Your AI Agency backend is running and ready to manage the complete sales funnel.</p>
+                <h3 style="margin-bottom: 15px;">✅ Dashboard is LIVE!</h3>
+                <p>Your AI Agency backend is running successfully on Railway.</p>
                 <p style="margin-top: 15px; color: #666; font-size: 13px;">
-                    <strong>Next:</strong> Connect this to your Instantly.ai + Stripe integrations to start sending cold emails and processing payments.
+                    Ready to manage your website redesign pipeline, send cold emails, process Stripe payments, and track client projects.
                 </p>
             </div>
         </div>
@@ -129,9 +122,13 @@ class Handler(BaseHTTPRequestHandler):
     </script>
 </body>
 </html>"""
-            self.wfile.write(html.encode())
-        else:
-            self.send_error(404)
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        self.wfile.write(HTML.encode())
     
     def log_message(self, format, *args):
         pass
@@ -139,5 +136,5 @@ class Handler(BaseHTTPRequestHandler):
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     server = HTTPServer(('0.0.0.0', port), Handler)
-    print(f'Dashboard running on port {port}')
+    print(f'Server running on port {port}')
     server.serve_forever()
